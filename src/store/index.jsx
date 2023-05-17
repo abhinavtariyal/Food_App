@@ -1,13 +1,19 @@
 import { configureStore, createSlice } from "@reduxjs/toolkit";
 
-const initialState = { pop: false };
+const initialState = { pop: false, notification: null };
 const popSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
     toggle(state) {
-      console.log(state.pop);
       state.pop = !state.pop;
+    },
+    showNotifications(state, action) {
+      state.notification = {
+        status: action.payload.status,
+        title: action.payload.title,
+        message: action.payload.message,
+      };
     },
   },
 });
