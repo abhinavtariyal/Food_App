@@ -18,18 +18,24 @@ const popSlice = createSlice({
   },
 });
 
-const initialItemState = { items: [], totalQuantity: 0 };
+const initialItemState = { items: [], totalQuantity: 0, changed: false };
 
 const itemSlice = createSlice({
   name: "item",
   initialState: initialItemState,
   reducers: {
+    replaceCart(state,action){
+      state.totalQuantity = action.payload.totalQuantity;
+      state.items = action.payload.items;  
+    },
+
     addItem(state, action) {
       const newItem = action.payload;
 
       const existingItem = state.items.find(
         (item) => item.itemId === newItem.itemId
       );
+      state.changed = true;
       if (!existingItem) {
         state.items.push({
           price: newItem.price,
@@ -47,7 +53,7 @@ const itemSlice = createSlice({
     removeItem(state, action) {
       const id = action.payload;
       const existingItem = state.items.find((item) => item.itemId === id);
-
+      state.changed = true;
       if (existingItem.quantity === 1) {
         console.log("Am I here?");
         state.items = state.items.filter((item) => item.itemId !== id);
@@ -59,6 +65,9 @@ const itemSlice = createSlice({
     },
   },
 });
+
+
+
 export const store = configureStore({
   reducer: { popReducer: popSlice.reducer, itemReducer: itemSlice.reducer },
 });

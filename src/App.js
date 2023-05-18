@@ -3,7 +3,7 @@ import Layout from "./components/Layout/Layout";
 import Products from "./components/Shop/Products";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
-import { popActions } from "./store/index";
+import { fetchCart, sendCart } from "./store/cart-actions";
 import { Fragment } from "react";
 import Notification from "./components/UI/Notification";
 let firstLoad = true;
@@ -13,49 +13,24 @@ function App() {
   const noti = useSelector((state) => state.popReducer.notification);
   const cart = useSelector((state) => state.itemReducer);
 
-  console.log(cart);
+  // useEffect(() => {
+  //   dispatch(retrieveCart());
+  // },[dispatch])
+  useEffect(() => {
+    dispatch(fetchCart());
+  }, [dispatch]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      dispatch(
-        popActions.showNotifications({
-          status: "pending",
-          title: "Sending",
-          message: "Sending Cart Data",
-        })
-      );
-
-      const response = await fetch(
-        "https://react-http-541f2-default-rtdb.firebaseio.com/cart",
-        {
-          method: "PUT",
-          body: JSON.stringify(cart),
-        }
-      );
-
-      if (!response) {
-        throw new Error("Sending Cart Data Failed");
-      }
-      dispatch(
-        popActions.showNotifications({
-          status: "success",
-          title: "Sent",
-          message: "Data Sent Successfully",
-        })
-      );
-    };
     if (firstLoad) {
       firstLoad = false;
       return;
     }
-    fetchData().catch((error) => {
-      dispatch(popActions.showNotifications({
-        status: "error",
-        title: "Error!!",
-        message: "Sending Cart Data Failed",
-      }));
-    });
+
+    if (cart.changed) {
+      dispatch(sendCart(cart));
+    }
   }, [cart, dispatch]);
+
   return (
     <Fragment>
       {noti && (
